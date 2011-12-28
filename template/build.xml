@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="{PROJECT_NAME}">
+	<loadproperties srcFile="local.properties" />
+
+	<property file="ant.properties" />
+
+	<loadproperties srcFile="project.properties" />
+
+	<fail message="sdk.dir is missing. Make sure to generate local.properties using 'android update project'" unless="sdk.dir" />
+
+	<import file="${sdk.dir}/tools/ant/build.xml" />
+	
+	<target name="debugapp" depends="clean, debug, install" />
+	<target name="releaseapp" depends="clean, release, install" />
+		
+	<target name="-package-resources" depends="-crunch">
+		<xpath input="AndroidManifest.xml" expression="/manifest/@package" output="manifest.package" />
+
+		<do-only-if-not-library elseText="Library project: do not package resources...">
+			<if condition="${build.is.packaging.debug}">
+				<then>
+					<if>
+						<condition>
+							<isset property="packagename.debug" />
+						</condition>
+						<then>
+							<exec executable="${aapt}" failonerror="true">
+								<arg value="package" />
+								<arg value="-f" />
+								<arg value="-v" />
+								<arg value="--debug-mode" />
+								<arg value="-M" />
+								<arg path="AndroidManifest.xml" />
+								<arg value="-A" />
+								<arg path="${asset.absolute.dir}" />
+								<arg value="-I" />
+								<arg path="${android.jar}" />
+								<arg value="-F" />
+								<arg path="${out.absolute.dir}/${resource.package.file.name}" />
+								<arg value="-S" />
+								<arg path="${resource.absolute.dir}" />
+								<arg value="--rename-manifest-package" />
+								<arg value="${packagename.debug}" />
+							</exec>
+						</then>
+						<else>
+							<exec executable="${aapt}" failonerror="true">
+								<arg value="package" />
+								<arg value="-f" />
+								<arg value="-v" />
+								<arg value="--debug-mode" />
+								<arg value="-M" />
+								<arg path="AndroidManifest.xml" />
+								<arg value="-A" />
+								<arg path="${asset.absolute.dir}" />
+								<arg value="-I" />
+								<arg path="${android.jar}" />
+								<arg value="-F" />
+								<arg path="${out.absolute.dir}/${resource.package.file.name}" />
+								<arg value="-S" />
+								<arg path="${resource.absolute.dir}" />
+							</exec>
+						</else>
+					</if>
+				</then>
+				<else>
+					<exec executable="${aapt}" failonerror="true">
+						<arg value="package" />
+						<arg value="-f" />
+						<arg value="-v" />
+						<arg value="-M" />
+						<arg path="AndroidManifest.xml" />
+						<arg value="-A" />
+						<arg path="${asset.absolute.dir}" />
+						<arg value="-I" />
+						<arg path="${android.jar}" />
+						<arg value="-F" />
+						<arg path="${out.absolute.dir}/${resource.package.file.name}" />
+						<arg value="-S" />
+						<arg path="${resource.absolute.dir}" />
+						<arg value="--rename-manifest-package" />
+						<arg value="${manifest.package}" />
+					</exec>
+				</else>
+			</if>
+		</do-only-if-not-library>
+	</target>
+</project>
