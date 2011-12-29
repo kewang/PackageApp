@@ -5,7 +5,7 @@ You can use this tool to deploy Android app. it can help you build two the same 
 
 Usage
 -------
-	java -jar PackageApp.jar -e -p {ProjectName} -d {DebugPackageName}
+	java -jar PackageApp.jar [-e] -p {ProjectName} -d {DebugPackageName}
 * -e: whether generate External Tools
 * -p: the project name
 * -d: the development package name
