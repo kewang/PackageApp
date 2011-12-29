@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class Main {
-	public static final boolean EXECUTE_JAR = false;
+	public static final boolean EXECUTE_JAR = true;
 
 	public static void main(String[] args) {
 		String projectName = "";
@@ -43,7 +43,7 @@ public class Main {
 
 		if (projectName == "") {
 			System.out
-					.println("Usage: java -jar [-e] -p projectName -d debugPackageName");
+					.println("Usage: java -jar PackageApp.jar [-e] -p projectName -d debugPackageName");
 			System.exit(0);
 		}
 
