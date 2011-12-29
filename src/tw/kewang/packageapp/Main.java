@@ -41,8 +41,13 @@ public class Main {
 			}
 		}
 
-		generateProjectProperties(debugPackageName);
-		generateLocalProperties();
+		if (projectName == "") {
+			System.out
+					.println("Usage: java -jar [-e] -p projectName -d debugPackageName");
+			System.exit(0);
+		}
+
+		generateProjectAndLocalProperties(projectName, debugPackageName);
 		generateAntProperties();
 		generateBuildXml(projectName);
 
@@ -52,55 +57,28 @@ public class Main {
 		}
 	}
 
-	private static void generateProjectProperties(String debugPackageName) {
-		/*
-		 * try { BufferedReader br = EXECUTE_JAR ? new BufferedReader( new
-		 * InputStreamReader( Main.class.getClass().getResourceAsStream(
-		 * "/template/project.properties"))) : new BufferedReader(new
-		 * FileReader(new File( "template/project.properties"))); BufferedWriter
-		 * bw = new BufferedWriter(new FileWriter(new File(
-		 * "project.properties"))); String line;
-		 * 
-		 * while ((line = br.readLine()) != null) { if
-		 * (line.contains("{DEBUG_PACKAGENAME}")) { if (debugPackageName != "")
-		 * { line = line.replace("{DEBUG_PACKAGENAME}", debugPackageName); }
-		 * else { line = ""; } }
-		 * 
-		 * bw.write(line + "\r\n"); }
-		 * 
-		 * br.close(); bw.close(); } catch (FileNotFoundException e) {
-		 * e.printStackTrace(); } catch (IOException e) { e.printStackTrace(); }
-		 */
+	private static void generateProjectAndLocalProperties(String projectName,
+			String debugPackageName) {
 		try {
-			Process process = Runtime.getRuntime().exec(
-					"android update project --path .");
-			
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private static void generateLocalProperties() {
-		try {
-			BufferedReader br = EXECUTE_JAR ? new BufferedReader(
-					new InputStreamReader(Main.class.getClass()
-							.getResourceAsStream("/template/local.properties")))
-					: new BufferedReader(new FileReader(new File(
-							"template/local.properties")));
+			String command = String.format(
+					"android update project --name %s --path .", projectName);
+			Runtime.getRuntime().exec(command).waitFor();
 			BufferedWriter bw = new BufferedWriter(new FileWriter(new File(
-					"local.properties")));
-			String line;
+					"project.properties"), true));
 
-			while ((line = br.readLine()) != null) {
-				bw.write(line + "\r\n");
+			new File("build.xml").delete();
+
+			if (debugPackageName != "") {
+				bw.write(String
+						.format("packagename.debug=%s", debugPackageName));
+				bw.newLine();
 			}
 
-			br.close();
+			bw.flush();
 			bw.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
@@ -117,10 +95,12 @@ public class Main {
 			String line;
 
 			while ((line = br.readLine()) != null) {
-				bw.write(line + "\r\n");
+				bw.write(line);
+				bw.newLine();
 			}
 
 			br.close();
+			bw.flush();
 			bw.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -145,10 +125,12 @@ public class Main {
 					line = line.replace("{PROJECT_NAME}", projectName);
 				}
 
-				bw.write(line + "\r\n");
+				bw.write(line);
+				bw.newLine();
 			}
 
 			br.close();
+			bw.flush();
 			bw.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -188,10 +170,12 @@ public class Main {
 					line = line.replace("{PROJECT_NAME}", projectName);
 				}
 
-				bw.write(line + "\r\n");
+				bw.write(line);
+				bw.newLine();
 			}
 
 			br.close();
+			bw.flush();
 			bw.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
