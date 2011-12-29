@@ -53,34 +53,29 @@ public class Main {
 	}
 
 	private static void generateProjectProperties(String debugPackageName) {
+		/*
+		 * try { BufferedReader br = EXECUTE_JAR ? new BufferedReader( new
+		 * InputStreamReader( Main.class.getClass().getResourceAsStream(
+		 * "/template/project.properties"))) : new BufferedReader(new
+		 * FileReader(new File( "template/project.properties"))); BufferedWriter
+		 * bw = new BufferedWriter(new FileWriter(new File(
+		 * "project.properties"))); String line;
+		 * 
+		 * while ((line = br.readLine()) != null) { if
+		 * (line.contains("{DEBUG_PACKAGENAME}")) { if (debugPackageName != "")
+		 * { line = line.replace("{DEBUG_PACKAGENAME}", debugPackageName); }
+		 * else { line = ""; } }
+		 * 
+		 * bw.write(line + "\r\n"); }
+		 * 
+		 * br.close(); bw.close(); } catch (FileNotFoundException e) {
+		 * e.printStackTrace(); } catch (IOException e) { e.printStackTrace(); }
+		 */
 		try {
-			BufferedReader br = EXECUTE_JAR ? new BufferedReader(
-					new InputStreamReader(
-							Main.class.getClass().getResourceAsStream(
-									"/template/project.properties")))
-					: new BufferedReader(new FileReader(new File(
-							"template/project.properties")));
-			BufferedWriter bw = new BufferedWriter(new FileWriter(new File(
-					"project.properties")));
-			String line;
-
-			while ((line = br.readLine()) != null) {
-				if (line.contains("{DEBUG_PACKAGENAME}")) {
-					if (debugPackageName != "") {
-						line = line.replace("{DEBUG_PACKAGENAME}",
-								debugPackageName);
-					} else {
-						line = "";
-					}
-				}
-
-				bw.write(line + "\r\n");
-			}
-
-			br.close();
-			bw.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			Process process = Runtime.getRuntime().exec(
+					"android update project --path .");
+			
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
