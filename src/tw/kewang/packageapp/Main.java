@@ -3,11 +3,14 @@ package tw.kewang.packageapp;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,30 +54,51 @@ public class Main {
 		}
 
 		generateProjectAndLocalProperties(projectName, debugPackageName);
-		// generateAntProperties();
-		// generateBuildXml(projectName);
-		//
-		// if (externalTools) {
-		// generateExternalTools(projectName, false);
-		// generateExternalTools(projectName, true);
-		// }
+		generateAntProperties();
+		generateBuildXml(projectName);
+
+		if (externalTools) {
+			generateExternalTools(projectName, false);
+			generateExternalTools(projectName, true);
+		}
 	}
 
 	private static void generateProjectAndLocalProperties(String projectName,
 			String debugPackageName) {
 		try {
-			// String command = String.format(
-			// "android update project --name %s --path .", projectName);
-			// Runtime.getRuntime().exec(command).waitFor();
+			String command = String.format(
+					"android update project --name %s --path .", projectName);
+			Runtime.getRuntime().exec(command).waitFor();
 			BufferedWriter bw = new BufferedWriter(new FileWriter(new File(
 					"project.properties"), true));
-			BufferedReader br = new BufferedReader(new FileReader(new File(
-					"project.properties")));
 
-			// new File("build.xml").delete();
+			new File("build.xml").delete();
 
+			if (EXECUTE_JAR) {
+				copyAndExecuteJarToLibrary();
+			}
+
+			if (debugPackageName != "") {
+				bw.write(String
+						.format("packagename.debug=%s", debugPackageName));
+				bw.newLine();
+			}
+
+			bw.flush();
+			bw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static void copyAndExecuteJarToLibrary() {
+		try {
 			String line;
 			List<File> dirs = new ArrayList<File>();
+			BufferedReader br = new BufferedReader(new FileReader(new File(
+					"project.properties")));
 
 			while ((line = br.readLine()) != null) {
 				line = line.trim();
@@ -86,20 +110,19 @@ public class Main {
 					dirs.add(new File(keys[1]));
 				}
 			}
-
-			// if (debugPackageName != "") {
-			// bw.write(String
-			// .format("packagename.debug=%s", debugPackageName));
-			// bw.newLine();
-			// }
-
 			br.close();
-			bw.flush();
-			bw.close();
+
+			String currentPath = Main.class.getProtectionDomain()
+					.getCodeSource().getLocation().getPath();
+
+			for (File dir : dirs) {
+				copyFile(currentPath, dir.getCanonicalPath()
+						+ "/PackageApp.jar");
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-			// } catch (InterruptedException e) {
-			// e.printStackTrace();
 		}
 	}
 
@@ -199,6 +222,20 @@ public class Main {
 			bw.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void copyFile(String src, String dest) {
+		try {
+			FileChannel srcChannel = new FileInputStream(src).getChannel();
+			FileChannel destChannel = new FileOutputStream(dest).getChannel();
+
+			destChannel.transferFrom(srcChannel, 0, srcChannel.size());
+
+			srcChannel.close();
+			destChannel.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
