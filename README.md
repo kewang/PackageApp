@@ -12,7 +12,6 @@ First
 
 Second
 -------
-at your project directory, then type
 	ant debugapp
 	ant releaseapp
 
