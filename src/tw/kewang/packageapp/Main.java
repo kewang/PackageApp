@@ -8,9 +8,12 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
-	public static final boolean EXECUTE_JAR = true;
+	private static final String ANDROID_LIBRARY_REFERENCE = "android.library.reference";
+	private static final boolean EXECUTE_JAR = true;
 
 	public static void main(String[] args) {
 		String projectName = "";
@@ -43,43 +46,60 @@ public class Main {
 
 		if (projectName == "") {
 			System.out
-					.println("Usage: java -jar PackageApp.jar [-e] -p projectName -d debugPackageName");
+					.println("Usage: java -jar PackageApp.jar [-e] -p projectName [-d debugPackageName]");
 			System.exit(0);
 		}
 
 		generateProjectAndLocalProperties(projectName, debugPackageName);
-		generateAntProperties();
-		generateBuildXml(projectName);
-
-		if (externalTools) {
-			generateExternalTools(projectName, false);
-			generateExternalTools(projectName, true);
-		}
+		// generateAntProperties();
+		// generateBuildXml(projectName);
+		//
+		// if (externalTools) {
+		// generateExternalTools(projectName, false);
+		// generateExternalTools(projectName, true);
+		// }
 	}
 
 	private static void generateProjectAndLocalProperties(String projectName,
 			String debugPackageName) {
 		try {
-			String command = String.format(
-					"android update project --name %s --path .", projectName);
-			Runtime.getRuntime().exec(command).waitFor();
+			// String command = String.format(
+			// "android update project --name %s --path .", projectName);
+			// Runtime.getRuntime().exec(command).waitFor();
 			BufferedWriter bw = new BufferedWriter(new FileWriter(new File(
 					"project.properties"), true));
+			BufferedReader br = new BufferedReader(new FileReader(new File(
+					"project.properties")));
 
-			new File("build.xml").delete();
+			// new File("build.xml").delete();
 
-			if (debugPackageName != "") {
-				bw.write(String
-						.format("packagename.debug=%s", debugPackageName));
-				bw.newLine();
+			String line;
+			List<File> dirs = new ArrayList<File>();
+
+			while ((line = br.readLine()) != null) {
+				line = line.trim();
+
+				if (!line.startsWith("#")
+						&& line.contains(ANDROID_LIBRARY_REFERENCE)) {
+					String[] keys = line.split("=");
+
+					dirs.add(new File(keys[1]));
+				}
 			}
 
+			// if (debugPackageName != "") {
+			// bw.write(String
+			// .format("packagename.debug=%s", debugPackageName));
+			// bw.newLine();
+			// }
+
+			br.close();
 			bw.flush();
 			bw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+			// } catch (InterruptedException e) {
+			// e.printStackTrace();
 		}
 	}
 
