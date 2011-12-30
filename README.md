@@ -3,12 +3,18 @@ PackageApp README
 
 You can use this tool to deploy Android app. it can help you build two the same Android apps with different package name.
 
-Usage
+First
 -------
 	java -jar PackageApp.jar [-e] -p {ProjectName} -d {DebugPackageName}
 * -e: whether generate External Tools
 * -p: the project name
 * -d: the development package name
+
+Second
+-------
+at your project directory, then type
+	ant debugapp
+	ant releaseapp
 
 References
 -------
