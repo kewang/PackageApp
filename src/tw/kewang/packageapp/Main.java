@@ -53,6 +53,7 @@ public class Main {
 			System.exit(0);
 		}
 
+		updateProject(projectName);
 		generateProjectAndLocalProperties(projectName, debugPackageName);
 		generateAntProperties();
 		generateBuildXml(projectName);
@@ -63,12 +64,21 @@ public class Main {
 		}
 	}
 
-	private static void generateProjectAndLocalProperties(String projectName,
-			String debugPackageName) {
+	private static void updateProject(String projectName) {
 		try {
 			String command = String.format(
 					"android update project --name %s --path .", projectName);
 			Runtime.getRuntime().exec(command).waitFor();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static void generateProjectAndLocalProperties(String projectName,
+			String debugPackageName) {
+		try {
 			BufferedWriter bw = new BufferedWriter(new FileWriter(new File(
 					"project.properties"), true));
 
@@ -87,8 +97,6 @@ public class Main {
 			bw.flush();
 			bw.close();
 		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
@@ -227,7 +235,7 @@ public class Main {
 		}
 	}
 
-	public static void copyFile(String src, String dest) {
+	private static void copyFile(String src, String dest) {
 		try {
 			FileChannel srcChannel = new FileInputStream(src).getChannel();
 			FileChannel destChannel = new FileOutputStream(dest).getChannel();
