@@ -1,5 +1,9 @@
-PackageApp README
+README
 =============
+
+Download
+------
+[the link](https://dl.dropboxusercontent.com/u/1161093/PackageApp.jar)
 
 You can use this tool to deploy Android app. it can help you build two the same Android apps with different package name.
 
