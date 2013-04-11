@@ -1,7 +1,7 @@
 README
 =============
 
-You can use this tool to deploy Android app. it can help you build two the same Android apps with different package name.
+You can put this tool to your Android Project folder to deploy app. it can help you build two the same Android apps with different package name.
 
 Download
 ------
